@@ -6,5 +6,7 @@ def landing(request):
 
 def dashboard(request):
     if request.user.is_authenticated:
-        print("LOGGED IN AS" + request.user.username)
-    return render(request, "logger/dashboard.html")
+        print("LOGGED IN AS" + request.user.email)
+        return render(request, "logger/dashboard.html")
+    else:
+        return render(request, "logger/landing-page.html")
