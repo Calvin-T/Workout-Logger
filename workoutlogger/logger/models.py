@@ -1,23 +1,21 @@
 from django.db import models
+from users.models import CustomUser as User
 
-# Create your models here.
-class User(models.Model):
-    email = models.CharField(max_length=30, primary_key=True)
-    age = models.IntegerField()
-    height = models.IntegerField()
-    weight = models.IntegerField()
+class Category(models.Model):
+    category = models.CharField(max_length=50)
 
 class Exercise(models.Model):
-    name = models.CharField(max_length=30, primary_key=True)
-    set = models.ManyToManyField(User, through='User_Exercise')
+    name = models.CharField(max_length=50, primary_key=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, default=None)
+
+class WorkoutSession(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField()
 
 class User_Exercise(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
-
-    repitions = models.IntegerField(null = True)
-    weight = models.IntegerField(null = True)
-    time = models.IntegerField(null = True)
-    distance = models.IntegerField(null = True)
-
-    date = models.DateField()
+    workout_session = models.ForeignKey(WorkoutSession, on_delete=models.CASCADE, default=None)
+    repitions = models.IntegerField(null = True, blank=True)
+    weight = models.IntegerField(null = True, blank=True)
+    time = models.IntegerField(null = True, blank=True)
+    distance = models.IntegerField(null = True, blank=True)
