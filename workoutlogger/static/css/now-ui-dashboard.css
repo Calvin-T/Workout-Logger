@@ -821,7 +821,7 @@ fieldset[disabled]
 .no-caret.dropdown-toggle::after {
   display: none; }
 
-.form-control::-moz-placeholder {
+/* .form-control::-moz-placeholder {
   color: #DDDDDD;
   opacity: 1;
   filter: alpha(opacity=100); }
@@ -1169,7 +1169,7 @@ textarea.form-control {
   padding: 10px 15px 0 5px; }
 
 .form-horizontal .form-check-inline {
-  margin-top: 6px; }
+  margin-top: 6px; } */
 
 button,
 input,
@@ -1382,7 +1382,7 @@ a[data-toggle="collapse"][aria-expanded="true"] .caret,
   border-right: 4px solid transparent;
   border-left: 4px solid transparent; }
 
-.form-check {
+/* .form-check {
   margin-top: .5rem; }
 
 .form-check .form-check-label {
@@ -1484,7 +1484,7 @@ a[data-toggle="collapse"][aria-expanded="true"] .caret,
 
 .form-check-radio input[type="radio"]:disabled + .form-check-sign::before,
 .form-check-radio input[type="radio"]:disabled + .form-check-sign::after {
-  color: #9A9A9A; }
+  color: #9A9A9A; } */
 
 .navbar {
   padding-top: 0.625rem;
@@ -3250,9 +3250,9 @@ Created using IcoMoon - icomoon.io
     display: block; }
   .navbar .dropdown .dropdown-menu {
     display: none; }
-  .navbar .dropdown.show .dropdown-menu,
+  /* .navbar .dropdown.show .dropdown-menu,
   .navbar .dropdown .dropdown-menu {
-    background-color: transparent;
+    background-color: white;
     border: 0;
     -webkit-transition: none;
     transition: none;
@@ -3260,7 +3260,7 @@ Created using IcoMoon - icomoon.io
     box-shadow: none;
     width: auto;
     margin: 0px 1rem;
-    margin-top: 0px; }
+    margin-top: 0px; } */
     .navbar .dropdown.show .dropdown-menu:before,
     .navbar .dropdown .dropdown-menu:before {
       display: none; }
