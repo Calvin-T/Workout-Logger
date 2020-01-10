@@ -107,11 +107,11 @@ $(window).resize(function () {
   if ($('.full-screen-map').length == 0 && $('.bd-docs').length == 0) {
     $navbar = $('.navbar');
     isExpanded = $('.navbar').find('[data-toggle="collapse"]').attr("aria-expanded");
-    if ($navbar.hasClass('bg-white') && $(window).width() > 991) {
-      $navbar.removeClass('bg-white').addClass('navbar-transparent');
-    } else if ($navbar.hasClass('navbar-transparent') && $(window).width() < 991 && isExpanded != "false") {
-      $navbar.addClass('bg-white').removeClass('navbar-transparent');
-    }
+    // if ($navbar.hasClass('bg-white') && $(window).width() > 991) {
+    //   $navbar.removeClass('bg-white').addClass('navbar-transparent');
+    // } else if ($navbar.hasClass('navbar-transparent') && $(window).width() < 991 && isExpanded != "false") {
+    //   $navbar.addClass('bg-white').removeClass('navbar-transparent');
+    // }
   }
 });
 
