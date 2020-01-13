@@ -1,11 +1,54 @@
+
+
 {% extends 'logger/sidebar_template.html' %}
+{% load crispy_forms_tags %}
+
+
 
 {% block content %}
+
+<form class="form-logworkout" method="POST">
+  {% csrf_token %}
   <div class="card">
     <div class="card-header">
-        <h5 class="title">Log a new workout</h5>
+
+      <h5 class="title">Log a new workout</h5>
+
     </div>
-  <div class="card-body">
-    
+
+      <div class="card-body">
+        <div id='card1' class="card w-75">
+          <div class="card-header">
+            <div class="form-group mb-0">
+              {{ form.exercise|as_crispy_field }}
+            </div>
+            <div class="form-group mb-0">
+              {{ form.date|as_crispy_field }}
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6 mb-0">
+                {{ form.repititions|as_crispy_field }}
+              </div>
+              <div class="form-group col-md-6 mb-0">
+                {{ form.weight|as_crispy_field }}
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6 mb-0">
+                {{ form.time|as_crispy_field }}
+              </div>
+              <div class="form-group col-md-6 mb-0">
+                {{ form.distance|as_crispy_field }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer"
+        <p>
+          <button class="btn btn-primary" type="submit">Log Workout</button>
+        </p>
+      </div>
   </div>
+</form>
 {% endblock %}
