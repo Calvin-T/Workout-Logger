@@ -26,9 +26,16 @@ def log_workout(request):
         formset = WorkoutLogFormset(request.POST)
         if formset.is_valid():
 
-            for form in formset():
+            for form in formset:
+                print("==================================")
+                print(form.cleaned_data.get('exercise'))
                 exercise = Exercise.objects.all().filter(name=form.cleaned_data.get('exercise')).first()
-                workout_session = WorkoutSession(user=request.user, date=form.cleaned_data.get('date'))
+                if exercise == None:
+                    print('here')
+                workout_session= WorkoutSession.objects.all().filter(user=request.user, date = form.cleaned_data.get('date')).first()
+                if workout_session == None:
+                    workout_session = WorkoutSession(user=request.user, date=form.cleaned_data.get('date'))
+                    workout_session.save()
 
                 user_exercise = User_Exercise(
                     exercise=exercise,

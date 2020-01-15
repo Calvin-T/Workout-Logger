@@ -11,9 +11,7 @@
   $(document).ready(function() {
 
     $("#add_exercise").on("click", function () {
-
-
-      var g = '$("#card1").html()';
+      var g = $("#card1").html();
       var n = $('<div id="card2" class="card w-75"></div>');
       n.html(g);
       $(".card-body").append(n);
@@ -22,7 +20,8 @@
 
     $("#remove_exercise").on("click", function() {
       //$("#remove_exercise").closest("div.card w-75").remove();
-      $('div.card-body').children().last().remove();
+      if($('div.card-body').children().last().attr('id') != 'card1')
+        $('div.card-body').children().last().remove();
     });
   });
 </script>
@@ -34,41 +33,39 @@
       <h5 class="title">Log a new workout</h5>
 
     </div>
-    {% csrf_token %}
-    {{ formset.management_form }}
-    {% for form in formset %}
-
-      <div class="card-body">
-        <div id='card1' class="card w-75">
-          <div class="card-header">
-            <div class="form-group mb-0">
-              {{ form.exercise|as_crispy_field }}
+    <div class="card-body">
+      {% csrf_token %}
+      {{ formset.management_form }}
+      {% for form in formset %}
+      <div id='card1' class="card w-75">
+        <div class="card-header">
+          <div class="form-group mb-0">
+            {{ form.exercise|as_crispy_field }}
+          </div>
+          <div class="form-group mb-0">
+            {{ form.date|as_crispy_field }}
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6 mb-0">
+              {{ form.repititions|as_crispy_field }}
             </div>
-            <div class="form-group mb-0">
-              {{ form.date|as_crispy_field }}
+            <div class="form-group col-md-6 mb-0">
+              {{ form.weight|as_crispy_field }}
             </div>
-            <div class="form-row">
-              <div class="form-group col-md-6 mb-0">
-                {{ form.repititions|as_crispy_field }}
-              </div>
-              <div class="form-group col-md-6 mb-0">
-                {{ form.weight|as_crispy_field }}
-              </div>
-            </div>
-
           </div>
         </div>
       </div>
+    </div>
     {% endfor %}
-      <div class="card-footer"
-        <p>
-          <button type="button" class="btn btn-outline-primary" id="add_exercise">Add Exercise</button>
-          <button type="button" class="btn btn-outline-danger" id="remove_exercise">Remove Exercise</button>
-        </p>
-        <p>
-          <button class="btn btn-primary" type="submit">Log Workout</button>
-        </p>
-      </div>
+    <div class="card-footer"
+      <p>
+        <button type="button" class="btn btn-outline-primary" id="add_exercise">Add Exercise</button>
+        <button type="button" class="btn btn-outline-danger" id="remove_exercise">Remove Exercise</button>
+      </p>
+      <p>
+        <button class="btn btn-primary" type="submit">Log Workout</button>
+      </p>
+    </div>
   </div>
 </form>
 {% endblock %}
