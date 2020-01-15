@@ -20,5 +20,5 @@ class User_Exercise(models.Model):
     workout_session = models.ForeignKey(WorkoutSession, on_delete=models.CASCADE, default=None)
     repititions = models.IntegerField(null = True, blank=True)
     weight = models.IntegerField(null = True, blank=True)
-    time = models.IntegerField(null = True, blank=True)
-    distance = models.IntegerField(null = True, blank=True)
+    #time = models.IntegerField(null = True, blank=True)
+    #distance = models.IntegerField(null = True, blank=True)

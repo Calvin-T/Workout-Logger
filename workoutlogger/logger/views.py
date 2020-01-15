@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .forms import WorkoutLogForm
+from .forms import WorkoutLogForm, WorkoutLogFormset
 from .models import Exercise, WorkoutSession, User_Exercise, Category
+from django.forms import formset_factory
 
 
 
@@ -22,26 +23,19 @@ def dashboard(request):
 def log_workout(request):
 
     if request.method == 'POST':
-        form = WorkoutLogForm(request.POST)
-        if form.is_valid():
-            #category = Category.objects.all().filter(category="Chest")
-            exercise = Exercise.objects.all().filter(name=form.cleaned_data.get('exercise')).first()
-            print(exercise.name)
-            workout_session = WorkoutSession(user=request.user, date=form.cleaned_data.get('date'))
-            workout_session.save()
-            user_exercise = User_Exercise(
-                exercise=exercise,
-                workout_session=workout_session,
-                repititions=form.cleaned_data.get('repititions'),
-                weight=form.cleaned_data.get('weight'),
-                time=form.cleaned_data.get('time'),
-                distance=form.cleaned_data.get('distance')
-            )
-            user_exercise.save()
-    form = WorkoutLogForm()
-    return render(request, "logger/log_workout.html", {'active_page': 'Log Workout', 'form': form})
+        formset = WorkoutLogFormset(request.POST)
+        if formset.is_valid():
 
-def workout_log(request):
+            for form in formset():
+                exercise = Exercise.objects.all().filter(name=form.cleaned_data.get('exercise')).first()
+                workout_session = WorkoutSession(user=request.user, date=form.cleaned_data.get('date'))
 
-    queryset = User_Exercise.objects.all()
-    return render(request, "logger/workout_log.html", {'queryset': queryset})
+                user_exercise = User_Exercise(
+                    exercise=exercise,
+                    workout_session=workout_session,
+                    repititions=form.cleaned_data.get('repititions'),
+                    weight=form.cleaned_data.get('weight'),
+                )
+                user_exercise.save()
+    formset = WorkoutLogFormset()
+    return render(request, "logger/log_workout.html", {'active_page': 'Log Workout', 'formset': formset})

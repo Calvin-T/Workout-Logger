@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import formset_factory
 from logger.models import User_Exercise, Exercise
 from datetime import date
 
@@ -11,3 +12,5 @@ class WorkoutLogForm(forms.Form):
     weight = forms.FloatField(label='Weight', initial=0)
     time = forms.IntegerField(label='Time', initial=0)
     distance = forms.FloatField(label='Distance', initial=0)
+
+WorkoutLogFormset = formset_factory(WorkoutLogForm)
