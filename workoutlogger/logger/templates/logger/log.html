@@ -1,0 +1,50 @@
+{% extends 'logger/sidebar_template.html' %}
+
+{% block content %}
+
+  <div class='card'>
+
+    <div class='card-header'>
+      <h5>Workout Log</h5>
+    </div>
+
+    <div class='card-body'>
+      <table class="table">
+        <thead class="thead-dark">
+          <td>
+            <span style="font-weight:bold">Exercise</span>
+          </td>
+          <td>
+            <span style="font-weight:bold">Date</span>
+          </td>
+          <td>
+            <span style="font-weight:bold">Weight</span>
+          </td>
+          <td>
+            <span style="font-weight:bold">Repitions</span>
+          </td>
+        </thead>
+        <tbody>
+          {% for q in queryset %}
+          <tr>
+            <td>
+              {{q.exercise.name}}
+            </td>
+            <td>
+              {{q.workout_session.date}}
+            </td>
+            <td>
+              {{q.weight}}
+            </td>
+            <td>
+              {{q.repititions}}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+{% endblock %}

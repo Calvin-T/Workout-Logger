@@ -19,6 +19,8 @@
     <script src="{% static 'js/core/popper.min.js' %}"></script>
     <script src="{% static 'js/core/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/plugins/perfect-scrollbar.jquery.min.js' %}"></script>
+    <!--   Bootstrap CSS-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <!--  Notifications Plugin    -->
     <script src="{% static 'js/plugins/bootstrap-notify.js' %}"></script>
@@ -44,6 +46,12 @@
                         <a href="{% url 'logger-dashboard' %}">
                             <i class="now-ui-icons design_app"></i>
                             <p>Dashboard</p>
+                        </a>
+                    </li>
+                    <li {% if active_page == "Log" %} class='active' {% endif %}>
+                        <a href="{% url 'logger-log' %}">
+                            <i class="now-ui-icons design_app"></i>
+                            <p>Log</p>
                         </a>
                     </li>
                     <li {% if active_page == "Log Workout" %} class='active' {% endif %}>

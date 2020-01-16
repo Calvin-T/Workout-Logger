@@ -27,8 +27,7 @@ def log_workout(request):
         if formset.is_valid():
 
             for form in formset:
-                print("==================================")
-                print(form.cleaned_data.get('exercise'))
+
                 exercise = Exercise.objects.all().filter(name=form.cleaned_data.get('exercise')).first()
                 if exercise == None:
                     print('here')
@@ -46,3 +45,10 @@ def log_workout(request):
                 user_exercise.save()
     formset = WorkoutLogFormset()
     return render(request, "logger/log_workout.html", {'active_page': 'Log Workout', 'formset': formset})
+
+
+def log(request):
+
+    queryset = User_Exercise.objects.filter(workout_session__user=request.user).order_by('-workout_session__date')
+
+    return render(request, "logger/log.html", {'active_page': 'Log', 'queryset': queryset})
