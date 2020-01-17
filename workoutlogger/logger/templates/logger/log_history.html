@@ -27,6 +27,7 @@
                       <span style="user-select: none;">{{ session.date }}</span>
                       <button class="btn btn-info" style="float:right">Show Details</button>
                       <input type="hidden" value="{{session.id}}" name="id">
+                      <input type="hidden" value="select" name="operation">
                     </div>
                   </div>
                 </form>
@@ -40,9 +41,21 @@
 
   {% if session %}
   <div class='card-header'>
-    <a href="{% url 'logger-logged-sessions' %}" style="text-decoration: none;"> 
-      <button class="btn btn-info" style="font-family: 'Montserrat';">Back to List</button>
-    </a>
+    <div class="form-row">
+      <div class="col-6">
+        <a href="{% url 'logger-logged-sessions' %}" style="text-decoration: none;">
+          <button class="btn btn-info" style="font-family: 'Montserrat';">Back to List</button>
+        </a>
+      </div>
+      <div class="col-6">
+        <form method="POST">
+          {% csrf_token %}
+          <button class="btn btn-danger" style="float:right;" name="deleteBtn" onclick='return confirm("Are you sure you want to delete this workout?")'>Delete</button>
+          <input type="hidden" value="{{session.id}}" name="id">
+          <input type="hidden" value="delete" name="operation">
+        </form>
+      </div>
+    </div>
     <h5>{{session.date}}</h5>
   </div>
   <div class='card-body'>
@@ -89,6 +102,7 @@
 
 <script>
 $(document).ready( function () {
+
     var table = $('#sessionsTable').DataTable({
       ordering: false,
       searching: false,

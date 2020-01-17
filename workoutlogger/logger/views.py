@@ -64,8 +64,14 @@ def logged_sessions(request):
             return render(request, "logger/log_history.html", {'active_page': 'Log History', 'sessions': sessions})
         elif request.method == 'POST':
             id = request.POST.get('id')
-            session = WorkoutSession.objects.filter(id=id).first()
-            sets = User_Exercise.objects.filter(workout_session=session)
-            return render(request, "logger/log_history.html", {'active_page': 'Log History', 'sessions': None, 'session': session, 'sets': sets})
+            operation = request.POST.get('operation')
+            if operation == "select":
+                session = WorkoutSession.objects.filter(id=id).first()
+                sets = User_Exercise.objects.filter(workout_session=session)
+                return render(request, "logger/log_history.html", {'active_page': 'Log History', 'sessions': None, 'session': session, 'sets': sets})
+            else:
+                WorkoutSession.objects.filter(id=id).delete()
+                messages.success(request, f'Successfully deleted workout!')
+                return redirect('logger-logged-sessions')
     else:
         return redirect('logger-landing-page')
