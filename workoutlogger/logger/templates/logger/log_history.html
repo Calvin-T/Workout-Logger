@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 
-<div class='card'>
+<div class='card' style="width: 50% margin: 0 auto;">
 
   {% if sessions %}
   <div class='card-header'>
@@ -10,32 +10,37 @@
   </div>
 
   <div class='card-body'>
-    <table class="table" id="sessionsTable">
-      <thead class="thead-dark">
-        <td>
-          <span style="font-weight:bold">Date</span>
-        </td>
-      </thead>
-      <tbody>
-        {% for session in sessions %}
-          <tr>
-            <td>
-              <form method='POST' id='sessionForm'>
-                {% csrf_token %}
-                <span style="user-select: none;">{{ session.date }}</span>
-                <input type="hidden" value="{{session.id}}" name="id">
-              </form>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+      <table class="table" id="sessionsTable">
+        <thead class="thead-dark">
+          <td>
+            <span style="font-weight:bold">Date</span>
+          </td>
+        </thead>
+        <tbody>
+          {% for session in sessions %}
+            <tr>
+              <td>
+                <form method='POST' id='sessionForm'>
+                  <div class='form-row'>
+                    <div class="col-12">
+                      {% csrf_token %}
+                      <span style="user-select: none;">{{ session.date }}</span>
+                      <button class="btn btn-info" style="float:right">Show Details</button>
+                      <input type="hidden" value="{{session.id}}" name="id">
+                    </div>
+                  </div>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
   </div>
   {% endif %}
 
   {% if session %}
   <div class='card-header'>
-    <a href="{% url 'logger-logged-sessions' %}">
+    <a href="{% url 'logger-logged-sessions' %}" style="text-decoration: none;"> 
       <button class="btn btn-info" style="font-family: 'Montserrat';">Back to List</button>
     </a>
     <h5>{{session.date}}</h5>
@@ -78,16 +83,18 @@
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="https:////cdn.datatables.net/responsive/2.2.3/css/dataTables.responsive.css">
+<script type="text/javascript" charset="utf8" src="https:////cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.js"></script>
+
 
 <script>
 $(document).ready( function () {
-    $('#sessionsTable').DataTable({
+    var table = $('#sessionsTable').DataTable({
       ordering: false,
+      searching: false,
+      responsive: true,
+      autoWidth: false
     });
-
-    $('#sessionsTable tbody').on( 'click', 'tr', function () {
-        document.getElementById('sessionForm').submit();
-    } );
 } );
 </script>
 

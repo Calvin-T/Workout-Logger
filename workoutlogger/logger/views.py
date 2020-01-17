@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.http import HttpResponse
 from .forms import WorkoutLogForm, WorkoutLogFormset
 from .models import Exercise, WorkoutSession, User_Exercise, Category
@@ -31,7 +32,6 @@ def log_workout(request):
                 workout_session = WorkoutSession(user=user, date=date)
                 workout_session.save()
                 for form in formset:
-                    print("==================================")
                     exercise = Exercise.objects.all().filter(name=form.cleaned_data.get('exercise')).first()
                     if exercise == None:
                         print('here')
@@ -48,7 +48,8 @@ def log_workout(request):
                     )
                     user_exercise.save()
 
-                return redirect('logger-dashboard')
+                messages.success(request, f'Successfully logged new workout!')
+                return redirect('logger-logged-sessions')
 
         else:
             formset = WorkoutLogFormset()
