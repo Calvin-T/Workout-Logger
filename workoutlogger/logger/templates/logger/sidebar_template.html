@@ -48,8 +48,14 @@
                     </li>
                     <li {% if active_page == "Log Workout" %} class='active' {% endif %}>
                         <a href="{% url 'logger-log-workout' %}">
-                            <i class="now-ui-icons design_app"></i>
+                            <i class="now-ui-icons files_paper"></i>
                             <p>Log Workout</p>
+                        </a>
+                    </li>
+                    <li {% if active_page == "Log History" %} class='active' {% endif %}>
+                        <a href="{% url 'logger-logged-sessions' %}">
+                            <i class="now-ui-icons design_bullet-list-67"></i>
+                            <p>Log History</p>
                         </a>
                     </li>
                     <li {% if active_page == "User Profile" %} class='active' {% endif %}>

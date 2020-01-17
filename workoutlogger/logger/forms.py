@@ -8,7 +8,6 @@ exercise_choices = [('', '-----------')]
 for exercise in query:
     exercise_choices.append((exercise['name'], exercise['name']))
 
-print(exercise_choices)
 
 class WorkoutLogForm(forms.Form):
 

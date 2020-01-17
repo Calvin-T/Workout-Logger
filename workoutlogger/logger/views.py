@@ -22,30 +22,49 @@ def dashboard(request):
 
 def log_workout(request):
 
-    if request.method == 'POST':
-        formset = WorkoutLogFormset(request.POST)
-        if formset.is_valid():
-            date = request.POST.get('date')
-            user = request.user
-            for form in formset:
-                print("==================================")
-                exercise = Exercise.objects.all().filter(name=form.cleaned_data.get('exercise')).first()
-                if exercise == None:
-                    print('here')
-                workout_session= WorkoutSession.objects.all().filter(user=user, date = date).first()
-                if workout_session == None:
-                    workout_session = WorkoutSession(user=user, date=date)
-                    workout_session.save()
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            formset = WorkoutLogFormset(request.POST)
+            if formset.is_valid():
+                date = request.POST.get('date')
+                user = request.user
+                workout_session = WorkoutSession(user=user, date=date)
+                workout_session.save()
+                for form in formset:
+                    print("==================================")
+                    exercise = Exercise.objects.all().filter(name=form.cleaned_data.get('exercise')).first()
+                    if exercise == None:
+                        print('here')
+                    # workout_session= WorkoutSession.objects.all().filter(user=user, date = date).first()
+                    # if workout_session == None:
+                    #     workout_session = WorkoutSession(user=user, date=date)
+                    #     workout_session.save()
 
-                user_exercise = User_Exercise(
-                    exercise=exercise,
-                    workout_session=workout_session,
-                    repititions=form.cleaned_data.get('repititions'),
-                    weight=form.cleaned_data.get('weight'),
-                )
-                user_exercise.save()
-            return redirect('logger-dashboard')
+                    user_exercise = User_Exercise(
+                        exercise=exercise,
+                        workout_session=workout_session,
+                        repititions=form.cleaned_data.get('repititions'),
+                        weight=form.cleaned_data.get('weight'),
+                    )
+                    user_exercise.save()
 
+                return redirect('logger-dashboard')
+
+        else:
+            formset = WorkoutLogFormset()
+        return render(request, "logger/log_workout.html", {'active_page': 'Log Workout', 'formset': formset})
     else:
-        formset = WorkoutLogFormset()
-    return render(request, "logger/log_workout.html", {'active_page': 'Log Workout', 'formset': formset})
+        return redirect('logger-landing-page')
+
+def logged_sessions(request):
+    if request.user.is_authenticated:
+        if request.method == 'GET':
+            sessions = WorkoutSession.objects.filter(user=request.user).order_by('-date')
+            return render(request, "logger/log_history.html", {'active_page': 'Log History', 'sessions': sessions})
+        elif request.method == 'POST':
+            id = request.POST.get('id')
+            session = WorkoutSession.objects.filter(id=id).first()
+            sets = User_Exercise.objects.filter(workout_session=session)
+            return render(request, "logger/log_history.html", {'active_page': 'Log History', 'sessions': None, 'session': session, 'sets': sets})
+    else:
+        return redirect('logger-landing-page')

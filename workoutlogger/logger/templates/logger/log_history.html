@@ -1,0 +1,94 @@
+{% extends 'logger/sidebar_template.html' %}
+{% load static %}
+{% block content %}
+
+<div class='card'>
+
+  {% if sessions %}
+  <div class='card-header'>
+    <h5>Log History</h5>
+  </div>
+
+  <div class='card-body'>
+    <table class="table" id="sessionsTable">
+      <thead class="thead-dark">
+        <td>
+          <span style="font-weight:bold">Date</span>
+        </td>
+      </thead>
+      <tbody>
+        {% for session in sessions %}
+          <tr>
+            <td>
+              <form method='POST' id='sessionForm'>
+                {% csrf_token %}
+                <span style="user-select: none;">{{ session.date }}</span>
+                <input type="hidden" value="{{session.id}}" name="id">
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {% if session %}
+  <div class='card-header'>
+    <a href="{% url 'logger-logged-sessions' %}">
+      <button class="btn btn-info" style="font-family: 'Montserrat';">Back to List</button>
+    </a>
+    <h5>{{session.date}}</h5>
+  </div>
+  <div class='card-body'>
+    <table class="table" id="setsTable">
+      <thead class="thead-dark">
+        <td>
+          <span style="font-weight:bold">Exercise</span>
+        </td>
+        <td>
+          <span style="font-weight:bold">Weight</span>
+        </td>
+        <td>
+          <span style="font-weight:bold">Reps</span>
+        </td>
+      </thead>
+      <tbody>
+        {% for set in sets %}
+        <tr>
+          <td>
+            {{ set.exercise.name }}
+          </td>
+          <td>
+            {{ set.weight }}
+          </td>
+          <td>
+            {{ set.repititions }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+</div>
+
+<!-- Datatables -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+
+<script>
+$(document).ready( function () {
+    $('#sessionsTable').DataTable({
+      ordering: false,
+    });
+
+    $('#sessionsTable tbody').on( 'click', 'tr', function () {
+        document.getElementById('sessionForm').submit();
+    } );
+} );
+</script>
+
+{% endblock %}
