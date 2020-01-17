@@ -1,5 +1,10 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from .forms import WorkoutLogForm, WorkoutLogFormset
+from .models import Exercise, WorkoutSession, User_Exercise, Category
+from django.forms import formset_factory
+
+
 
 def landing(request):
     if request.user.is_authenticated:
@@ -16,4 +21,31 @@ def dashboard(request):
         return redirect('logger-landing-page')
 
 def log_workout(request):
-    return render(request, "logger/log_workout.html", {'active_page': 'Log Workout'})
+
+    if request.method == 'POST':
+        formset = WorkoutLogFormset(request.POST)
+        if formset.is_valid():
+            date = request.POST.get('date')
+            user = request.user
+            for form in formset:
+                print("==================================")
+                exercise = Exercise.objects.all().filter(name=form.cleaned_data.get('exercise')).first()
+                if exercise == None:
+                    print('here')
+                workout_session= WorkoutSession.objects.all().filter(user=user, date = date).first()
+                if workout_session == None:
+                    workout_session = WorkoutSession(user=user, date=date)
+                    workout_session.save()
+
+                user_exercise = User_Exercise(
+                    exercise=exercise,
+                    workout_session=workout_session,
+                    repititions=form.cleaned_data.get('repititions'),
+                    weight=form.cleaned_data.get('weight'),
+                )
+                user_exercise.save()
+            return redirect('logger-dashboard')
+
+    else:
+        formset = WorkoutLogFormset()
+    return render(request, "logger/log_workout.html", {'active_page': 'Log Workout', 'formset': formset})
