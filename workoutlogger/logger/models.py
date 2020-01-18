@@ -22,3 +22,10 @@ class User_Exercise(models.Model):
     weight = models.IntegerField(null = True, blank=True)
     #time = models.IntegerField(null = True, blank=True)
     #distance = models.IntegerField(null = True, blank=True)
+
+class WorkoutNames(models.Model):
+    name = models.CharField(max_length=50, primary_key=True)
+
+class WorkoutNames_Exercise(models.Model):
+    name = models.ForeignKey(WorkoutNames, on_delete=models.CASCADE)
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)

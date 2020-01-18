@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.http import HttpResponse
-from .forms import WorkoutLogForm, WorkoutLogFormset
+from .forms import WorkoutLogForm, WorkoutLogFormset, SavedWorkoutNameForm, SavedWorkoutLogForm, SavedWorkoutLogFormset
 from .models import Exercise, WorkoutSession, User_Exercise, Category
 from django.forms import formset_factory
 
@@ -22,33 +23,67 @@ def dashboard(request):
 
 def log_workout(request):
 
-    if request.method == 'POST':
-        formset = WorkoutLogFormset(request.POST)
-        if formset.is_valid():
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            formset = WorkoutLogFormset(request.POST)
+            if formset.is_valid():
+                date = request.POST.get('date')
+                user = request.user
+                workout_session = WorkoutSession(user=user, date=date)
+                workout_session.save()
+                for form in formset:
+                    exercise = Exercise.objects.all().filter(name=form.cleaned_data.get('exercise')).first()
+                    if exercise == None:
+                        print('here')
+                    # workout_session= WorkoutSession.objects.all().filter(user=user, date = date).first()
+                    # if workout_session == None:
+                    #     workout_session = WorkoutSession(user=user, date=date)
+                    #     workout_session.save()
 
-            for form in formset:
+                    user_exercise = User_Exercise(
+                        exercise=exercise,
+                        workout_session=workout_session,
+                        repititions=form.cleaned_data.get('repititions'),
+                        weight=form.cleaned_data.get('weight'),
+                    )
+                    user_exercise.save()
 
-                exercise = Exercise.objects.all().filter(name=form.cleaned_data.get('exercise')).first()
-                if exercise == None:
-                    print('here')
-                workout_session= WorkoutSession.objects.all().filter(user=request.user, date = form.cleaned_data.get('date')).first()
-                if workout_session == None:
-                    workout_session = WorkoutSession(user=request.user, date=form.cleaned_data.get('date'))
-                    workout_session.save()
+                messages.success(request, f'Successfully logged new workout!')
+                return redirect('logger-logged-sessions')
 
-                user_exercise = User_Exercise(
-                    exercise=exercise,
-                    workout_session=workout_session,
-                    repititions=form.cleaned_data.get('repititions'),
-                    weight=form.cleaned_data.get('weight'),
-                )
-                user_exercise.save()
-    formset = WorkoutLogFormset()
-    return render(request, "logger/log_workout.html", {'active_page': 'Log Workout', 'formset': formset})
+        else:
+            formset = WorkoutLogFormset()
+        return render(request, "logger/log_workout.html", {'active_page': 'Log Workout', 'formset': formset})
+    else:
+        return redirect('logger-landing-page')
+
+def logged_sessions(request):
+    if request.user.is_authenticated:
+        if request.method == 'GET':
+            sessions = WorkoutSession.objects.filter(user=request.user).order_by('-date')
+            return render(request, "logger/log_history.html", {'active_page': 'Log History', 'sessions': sessions})
+        elif request.method == 'POST':
+            id = request.POST.get('id')
+            operation = request.POST.get('operation')
+            if operation == "select":
+                session = WorkoutSession.objects.filter(id=id).first()
+                sets = User_Exercise.objects.filter(workout_session=session)
+                return render(request, "logger/log_history.html", {'active_page': 'Log History', 'sessions': None, 'session': session, 'sets': sets})
+            else:
+                WorkoutSession.objects.filter(id=id).delete()
+                messages.success(request, f'Successfully deleted workout!')
+                return redirect('logger-logged-sessions')
+    else:
+        return redirect('logger-landing-page')
 
 
-def log(request):
+def save_workout(request):
 
-    queryset = User_Exercise.objects.filter(workout_session__user=request.user).order_by('-workout_session__date')
+    if request.user.is_authenticated:
 
-    return render(request, "logger/log.html", {'active_page': 'Log', 'queryset': queryset})
+        form = SavedWorkoutNameForm()
+        formset = SavedWorkoutLogFormset()
+        return render(request, "logger/save_workout.html", {'active_page': 'Save Workout', 'form': form, 'formset': formset})
+
+    else:
+        return redirect('logger-landing-page')

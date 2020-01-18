@@ -1,0 +1,43 @@
+{% extends 'logger/sidebar_template.html' %}
+{% load crispy_forms_tags %}
+
+
+
+{% block content %}
+
+<form class="form-logworkout" method="POST">
+
+  <div class=card>
+
+    <div class=card-header>
+      <h5>Save a Workout</h5>
+    </div>
+
+    <div class=card-body>
+      {% csrf_token %}
+      <div class="form-group col-md-6 mb-0">
+        {{ form.name|as_crispy_field }}
+      </div>
+
+      <div class ="card" style="width: 60rem;">
+        <div class = card-body>
+          {{ formset.management_form }}
+          {% for form in formset %}
+          <div class="form-group col-md-8 mb-0">
+            {{ form.exercise|as_crispy_field }}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="col-6 offset-2">
+        <button type="button" class="btn btn-info col-md-3 add-form-row" id="add_exercise">Add Exercise</button>
+      </div>
+
+    </div>
+
+  </div>
+
+</form>
+
+{% endblock %}
