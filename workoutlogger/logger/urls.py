@@ -6,5 +6,6 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name="logger-dashboard"),
     path('log-workout/', views.log_workout, name="logger-log-workout"),
     path('log-history/', views.logged_sessions, name="logger-logged-sessions"),
-    path('save-workout/', views.save_workout, name="logger-save-workout")
+    path('save-workout/', views.save_workout, name="logger-save-workout"),
+    path('create-template/', views.logged_templates, name="logger-logged-templates")
 ]

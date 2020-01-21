@@ -7,23 +7,94 @@
 
 {% block content %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script>
+<!-- <script>
   $(document).ready(function() {
-
+    var total = 1;
     $("#add_exercise").on("click", function () {
+      total++;
       var g = $("#card1").html();
-      var n = $('<div id="card2" class="card w-75"></div>');
+      var n = $('<div id="card' + total + '" class="card"></div>');
       n.html(g);
-      $(".card-body").append(n);
-
+      // $(".card-body").append(n);
+      var form_idx = $('#id_form-TOTAL_FORMS').val();
+	    $('.card-body').append($('<div id="card' + total + '" class="card"></div>').html(g).replace(/__prefix__/g, form_idx));
+	    $('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1)
+      if(total > 1){
+        document.getElementById("remove_exercise").disabled = false;
+      }
     });
-
     $("#remove_exercise").on("click", function() {
       //$("#remove_exercise").closest("div.card w-75").remove();
-      if($('div.card-body').children().last().attr('id') != 'card1')
+      if(total > 1){
         $('div.card-body').children().last().remove();
+        total--;
+        if(total == 1){
+          document.getElementById("remove_exercise").disabled = true;
+        }
+      }
     });
   });
+</script> -->
+
+<script type='text/javascript'>
+function updateElementIndex(el, prefix, ndx) {
+    var id_regex = new RegExp('(' + prefix + '-\\d+)');
+    var replacement = prefix + '-' + ndx;
+    if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+    if (el.id) el.id = el.id.replace(id_regex, replacement);
+    if (el.name) el.name = el.name.replace(id_regex, replacement);
+}
+function cloneMore(selector, prefix) {
+    var newElement = $(selector).clone(true);
+    var total = $('#id_' + prefix + '-TOTAL_FORMS').val();
+    newElement.find(':input:not([type=button]):not([type=submit]):not([type=reset])').each(function() {
+        var name = $(this).attr('name').replace('-' + (total-1) + '-', '-' + total + '-');
+        var id = 'id_' + name;
+        $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+    });
+    newElement.find('label').each(function() {
+        var forValue = $(this).attr('for');
+        if (forValue) {
+          forValue = forValue.replace('-' + (total-1) + '-', '-' + total + '-');
+          $(this).attr({'for': forValue});
+        }
+    });
+    total++;
+    $('#id_' + prefix + '-TOTAL_FORMS').val(total);
+    $(selector).after(newElement);
+    return false;
+}
+function deleteForm(prefix) {
+    var total = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+    if (total > 1){
+        $('#sets-row').children().last().remove();
+        var forms = $('.form-row');
+        $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+        for (var i=0, formCount=forms.length; i<formCount; i++) {
+            $(forms.get(i)).find(':input').each(function() {
+                updateElementIndex(this, prefix, i);
+            });
+        }
+    }
+    return false;
+}
+$(document).on('click', '.add-form-row', function(e){
+    e.preventDefault();
+    cloneMore('.form-row:last', 'form');
+    return false;
+});
+$(document).on('click', '.remove-form-row', function(e){
+    e.preventDefault();
+    deleteForm('form');
+    return false;
+});
+
+$(document).ready(function() {
+  
+  deleteForm('form');
+  return false;
+});
+
 </script>
 
 <form class="form-logworkout" method="POST">
@@ -35,37 +106,66 @@
     </div>
     <div class="card-body">
       {% csrf_token %}
+      <div class="row">
+        <div class="form-group col-md-3">
+          <label for="datepicker">Date</label>
+          <input id="datepicker" name="date" class="form-control">
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" id="sets-row">
       {{ formset.management_form }}
       {% for form in formset %}
-      <div id='card1' class="card w-75">
-        <div class="card-header">
-          <div class="form-group mb-0">
-            {{ form.exercise|as_crispy_field }}
-          </div>
-          <div class="form-group mb-0">
-            {{ form.date|as_crispy_field }}
-          </div>
           <div class="form-row">
             <div class="form-group col-md-6 mb-0">
-              {{ form.repititions|as_crispy_field }}
+              {{ form.exercise|as_crispy_field }}
             </div>
-            <div class="form-group col-md-6 mb-0">
+            <div class="form-group col-md-3 mb-0">
               {{ form.weight|as_crispy_field }}
             </div>
+            <div class="form-group col-md-3 mb-0">
+              {{ form.repititions|as_crispy_field }}
+            </div>
           </div>
+      {% endfor %}
         </div>
       </div>
     </div>
-    {% endfor %}
-    <div class="card-footer"
-      <p>
-        <button type="button" class="btn btn-outline-primary" id="add_exercise">Add Exercise</button>
-        <button type="button" class="btn btn-outline-danger" id="remove_exercise">Remove Exercise</button>
-      </p>
-      <p>
-        <button class="btn btn-primary" type="submit">Log Workout</button>
-      </p>
+
+    <div class="card-footer">
+        <div class="row spacer">
+          <div class="col-6 offset-2">
+            <button type="button" class="btn btn-info col-md-12 add-form-row" id="add_exercise">Add Exercise</button>
+          </div>
+          <div class="col-6 offset-2">
+            <button type="button" class="btn btn-danger col-md-12 remove-form-row" id="remove_exercise">Remove Exercise</button>
+          </div>
+
+        </div>
+        <hr>
+        <div class="row spacer">
+            <div class="col-12 offset-2">
+                <button type="submit" class="btn btn-block btn-info" name="operation" value="log_workout">Create</button>
+            </div>
+        </div>
     </div>
   </div>
 </form>
+
+<script>
+  $(function () {
+    $("#datepicker").datepicker({
+      format: 'yyyy-mm-dd',
+      date: new Date().toISOString().slice(0,10),
+      autoPick: true,
+      autoHide: true
+    });
+  });
+
+</script>
+
+<!-- Fengyuan Chen's Datepicker -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datepicker/0.6.5/datepicker.min.css" integrity="sha256-b88RdwbRJEzRx95nCuuva+hO5ExvXXnpX+78h8DjyOE=" crossorigin="anonymous" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datepicker/0.6.5/datepicker.min.js" integrity="sha256-/7FLTdzP6CfC1VBAj/rsp3Rinuuu9leMRGd354hvk0k=" crossorigin="anonymous"></script>
+
 {% endblock %}

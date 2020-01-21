@@ -5,39 +5,109 @@
 
 {% block content %}
 
-<form class="form-logworkout" method="POST">
+<script type='text/javascript'>
+function updateElementIndex(el, prefix, ndx) {
+    var id_regex = new RegExp('(' + prefix + '-\\d+)');
+    var replacement = prefix + '-' + ndx;
+    if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+    if (el.id) el.id = el.id.replace(id_regex, replacement);
+    if (el.name) el.name = el.name.replace(id_regex, replacement);
+}
+function cloneMore(selector, prefix) {
+    var newElement = $(selector).clone(true);
+    var total = $('#id_' + prefix + '-TOTAL_FORMS').val();
+    newElement.find(':input:not([type=button]):not([type=submit]):not([type=reset])').each(function() {
+        var name = $(this).attr('name').replace('-' + (total-1) + '-', '-' + total + '-');
+        var id = 'id_' + name;
+        $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+    });
+    newElement.find('label').each(function() {
+        var forValue = $(this).attr('for');
+        if (forValue) {
+          forValue = forValue.replace('-' + (total-1) + '-', '-' + total + '-');
+          $(this).attr({'for': forValue});
+        }
+    });
+    total++;
+    $('#id_' + prefix + '-TOTAL_FORMS').val(total);
+    $(selector).after(newElement);
+    return false;
+}
+function deleteForm(prefix) {
+    var total = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+    if (total > 1){
+        $('#sets-row').children().last().remove();
+        var forms = $('.form-row');
+        $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+        for (var i=0, formCount=forms.length; i<formCount; i++) {
+            $(forms.get(i)).find(':input').each(function() {
+                updateElementIndex(this, prefix, i);
+            });
+        }
+    }
+    return false;
+}
+$(document).on('click', '.add-form-row', function(e){
+    e.preventDefault();
+    cloneMore('.form-row:last', 'form');
+    return false;
+});
+$(document).on('click', '.remove-form-row', function(e){
+    e.preventDefault();
+    deleteForm('form');
+    return false;
+});
+</script>
+
+
+
 
   <div class=card>
 
     <div class=card-header>
       <h5>Save a Workout</h5>
+      <form method='POST'>
+        {% csrf_token %}
+        <button class="btn btn-info" style="display">Back to Templates</button>
+        <input type="hidden" value="redirect" name="operation">
+      </form>
+
     </div>
 
     <div class=card-body>
+      <form class="form-logworkout" method="POST">
       {% csrf_token %}
       <div class="form-group col-md-6 mb-0">
         {{ form.name|as_crispy_field }}
       </div>
 
-      <div class ="card" style="width: 60rem;">
-        <div class = card-body>
+      <div class ="card" style="width: 50rem;">
+        <div class = card-body id="sets-row">
           {{ formset.management_form }}
           {% for form in formset %}
-          <div class="form-group col-md-8 mb-0">
-            {{ form.exercise|as_crispy_field }}
+          <div class="form-row">
+            <div class="form-group col-md-11 mb-0">
+              {{ form.exercise|as_crispy_field }}
+            </div>
           </div>
           {% endfor %}
         </div>
       </div>
 
-      <div class="col-6 offset-2">
-        <button type="button" class="btn btn-info col-md-3 add-form-row" id="add_exercise">Add Exercise</button>
-      </div>
+      <p>
+        <button type="button" class="btn btn-info col-md-4 add-form-row" id="add_exercise">Add Exercise</button>
+        <button type="button" class="btn btn-danger col-md-4 remove-form-row" id="remove_exercise">Remove Exercise</button>
+      </p>
 
+      <p>
+        <button type="submit" class="btn btn-block btn-info col-md-8">Create</button>
+      </p>
+
+      </form>
     </div>
 
   </div>
 
-</form>
+
 
 {% endblock %}

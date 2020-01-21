@@ -23,9 +23,13 @@ class User_Exercise(models.Model):
     #time = models.IntegerField(null = True, blank=True)
     #distance = models.IntegerField(null = True, blank=True)
 
-class WorkoutNames(models.Model):
-    name = models.CharField(max_length=50, primary_key=True)
+class WorkoutName(models.Model):
+    class Meta:
+        unique_together = (('name', 'user'),)
+    name = models.CharField(max_length=50)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-class WorkoutNames_Exercise(models.Model):
-    name = models.ForeignKey(WorkoutNames, on_delete=models.CASCADE)
+
+class WorkoutName_Exercise(models.Model):
+    name = models.ForeignKey(WorkoutName, on_delete=models.CASCADE)
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)

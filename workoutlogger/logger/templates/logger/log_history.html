@@ -1,0 +1,115 @@
+{% extends 'logger/sidebar_template.html' %}
+{% load static %}
+{% block content %}
+
+<div class='card' style="width: 50% margin: 0 auto;">
+
+  {% if sessions %}
+  <div class='card-header'>
+    <h5>Log History</h5>
+  </div>
+
+  <div class='card-body'>
+      <table class="table" id="sessionsTable">
+        <thead class="thead-dark">
+          <td>
+            <span style="font-weight:bold">Date</span>
+          </td>
+        </thead>
+        <tbody>
+          {% for session in sessions %}
+            <tr>
+              <td>
+                <form method='POST' id='sessionForm'>
+                  <div class='form-row'>
+                    <div class="col-12">
+                      {% csrf_token %}
+                      <span style="user-select: none;">{{ session.date }}</span>
+                      <button class="btn btn-info" style="float:right">Show Details</button>
+                      <input type="hidden" value="{{session.id}}" name="id">
+                      <input type="hidden" value="select" name="operation">
+                    </div>
+                  </div>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+  </div>
+  {% endif %}
+
+  {% if session %}
+  <div class='card-header'>
+    <div class="form-row">
+      <div class="col-6">
+        <a href="{% url 'logger-logged-sessions' %}" style="text-decoration: none;">
+          <button class="btn btn-info" style="font-family: 'Montserrat';">Back to List</button>
+        </a>
+      </div>
+      <div class="col-6">
+        <form method="POST">
+          {% csrf_token %}
+          <button class="btn btn-danger" style="float:right;" name="deleteBtn" onclick='return confirm("Are you sure you want to delete this workout?")'>Delete</button>
+          <input type="hidden" value="{{session.id}}" name="id">
+          <input type="hidden" value="delete" name="operation">
+        </form>
+      </div>
+    </div>
+    <h5>{{session.date}}</h5>
+  </div>
+  <div class='card-body'>
+    <table class="table" id="setsTable">
+      <thead class="thead-dark">
+        <td>
+          <span style="font-weight:bold">Exercise</span>
+        </td>
+        <td>
+          <span style="font-weight:bold">Weight</span>
+        </td>
+        <td>
+          <span style="font-weight:bold">Reps</span>
+        </td>
+      </thead>
+      <tbody>
+        {% for set in sets %}
+        <tr>
+          <td>
+            {{ set.exercise.name }}
+          </td>
+          <td>
+            {{ set.weight }}
+          </td>
+          <td>
+            {{ set.repititions }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+</div>
+
+<!-- Datatables -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" type="text/css" href="https:////cdn.datatables.net/responsive/2.2.3/css/dataTables.responsive.css">
+<script type="text/javascript" charset="utf8" src="https:////cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.js"></script>
+
+
+<script>
+$(document).ready( function () {
+
+    var table = $('#sessionsTable').DataTable({
+      ordering: false,
+      searching: false,
+      responsive: true,
+      autoWidth: false
+    });
+} );
+</script>
+
+{% endblock %}
